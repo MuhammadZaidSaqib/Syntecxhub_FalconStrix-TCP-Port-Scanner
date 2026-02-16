@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<body>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<div class="container">
+    <h1>FalconStrix Scanner</h1>
+
+    <input id="host" placeholder="Target Host">
+    <input id="start" type="number" placeholder="Start Port">
+    <input id="end" type="number" placeholder="End Port">
+
+    <button onclick="startScan()">Start Scan</button>
+    <a href="/history">View History</a>
+    <a href="/logout">Logout</a>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="resultsOutput"></div>
+</div>
+
+<script>
+var socket = io();
+
+function startScan() {
+    document.getElementById("resultsOutput").innerHTML = "";
+    socket.emit("start_scan", {
+        host: document.getElementById("host").value,
+        start: document.getElementById("start").value,
+        end: document.getElementById("end").value
+    });
+}
+
+socket.on("scan_result", function(data) {
+
+    var div = document.createElement("div");
+
+    if (data.status === "OPEN") {
+        div.style.color = "lightgreen";
+    } else if (data.status === "CLOSED") {
+        div.style.color = "red";
+    } else {
+        div.style.color = "yellow";
+    }
+
+    div.innerHTML = `Port ${data.port} - ${data.status} <br>
+                     <small>${data.banner}</small>`;
+
+    document.getElementById("resultsOutput").appendChild(div);
+    document.getElementById("progressBar").style.width = data.progress + "%";
+});
+</script>
+
+</body>
+</html>

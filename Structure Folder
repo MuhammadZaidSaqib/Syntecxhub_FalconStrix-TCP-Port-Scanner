@@ -1,0 +1,13 @@
+Port Scanner/
+│
+├── app.py
+├── requirements.txt
+│
+├── templates/
+│   ├── login.html
+│   ├── dashboard.html
+│   └── history.html
+│
+└── static/
+    ├── style.css
+    └── script.js
